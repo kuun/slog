@@ -44,6 +44,8 @@ const (
 type Slogger struct {
 	logger *stdLog.Logger
 	level  Level
+	// log.Logger.Output callPath
+	callPath int
 
 	debugImpl   func(l *Slogger, level Level, v ...interface{})
 	debugfImpl  func(l *Slogger, level Level, format string, v ...interface{})
@@ -74,34 +76,35 @@ type Slogger struct {
 	paniclnImpl func(l *Slogger, level Level, v ...interface{})
 }
 
+// New will create a new Slogger object
 func New(out io.Writer, level Level, prefix string, flag int) *Slogger {
-	l := &Slogger{logger: stdLog.New(out, prefix, flag)}
+	l := &Slogger{
+		logger:   stdLog.New(out, prefix, flag),
+		callPath: 3,
+	}
 	l.SetLevel(level)
 	return l
 }
-
-// log.Logger.Output callPath
-const callPath = 3
 
 // func suffix is "Y" is valid implements
 // func suffix is "N" is empty implements
 
 func printImplY(l *Slogger, level Level, v ...interface{}) {
-	l.logger.Output(callPath, levelName[level]+fmt.Sprint(v...))
+	l.logger.Output(l.callPath, levelName[level]+fmt.Sprint(v...))
 }
 
 func printImplN(l *Slogger, level Level, v ...interface{}) {
 }
 
 func printfImplY(l *Slogger, level Level, format string, v ...interface{}) {
-	l.logger.Output(callPath, fmt.Sprintf(levelName[level]+format, v...))
+	l.logger.Output(l.callPath, fmt.Sprintf(levelName[level]+format, v...))
 }
 
 func printfImplN(l *Slogger, level Level, format string, v ...interface{}) {
 }
 
 func printlnImplY(l *Slogger, level Level, v ...interface{}) {
-	l.logger.Output(callPath, levelName[level]+fmt.Sprintln(v...))
+	l.logger.Output(l.callPath, levelName[level]+fmt.Sprintln(v...))
 }
 
 func printlnImplN(l *Slogger, level Level, v ...interface{}) {
@@ -243,35 +246,130 @@ func (l *Slogger) Errorln(v ...interface{}) {
 
 // Fatal
 func (l *Slogger) Fatal(v ...interface{}) {
-	l.logger.Output(callPath, levelName[FATAL]+fmt.Sprint(v...))
+	l.logger.Output(l.callPath, levelName[FATAL]+fmt.Sprint(v...))
 	os.Exit(1)
 }
 
 func (l *Slogger) Fatalf(format string, v ...interface{}) {
-	l.logger.Output(callPath, fmt.Sprintf(levelName[FATAL]+format, v...))
+	l.logger.Output(l.callPath, fmt.Sprintf(levelName[FATAL]+format, v...))
 	os.Exit(1)
 }
 
 func (l *Slogger) Fatalln(v ...interface{}) {
-	l.logger.Output(callPath, levelName[FATAL]+fmt.Sprintln(v...))
+	l.logger.Output(l.callPath, levelName[FATAL]+fmt.Sprintln(v...))
 	os.Exit(1)
 }
 
 // Panic
 func (l *Slogger) Panic(v ...interface{}) {
 	s := levelName[_PANIC] + fmt.Sprintln(v...)
-	l.logger.Output(callPath, s)
+	l.logger.Output(l.callPath, s)
 	panic(s)
 }
 
 func (l *Slogger) Panicf(format string, v ...interface{}) {
 	s := fmt.Sprintf(levelName[_PANIC]+format, v...)
-	l.logger.Output(callPath, s)
+	l.logger.Output(l.callPath, s)
 	panic(s)
 }
 
 func (l *Slogger) Panicln(v ...interface{}) {
 	s := levelName[_PANIC] + fmt.Sprintln(v...)
-	l.logger.Output(callPath, s)
+	l.logger.Output(l.callPath, s)
 	panic(s)
+}
+
+// default logger
+var dlog *Slogger
+
+func init() {
+	dlog = New(os.Stderr, DEBUG, "", LstdFlags|Lshortfile)
+	dlog.callPath = 4
+}
+
+func SetLevel(level Level) {
+	dlog.SetLevel(level)
+}
+
+func Debug(v ...interface{}) {
+	dlog.Debug(v...)
+}
+
+func Debugf(fmt string, v ...interface{}) {
+	dlog.Debugf(fmt, v...)
+}
+
+func Debugln(v ...interface{}) {
+	dlog.Debugln(v...)
+}
+
+func Info(v ...interface{}) {
+	dlog.Info(v...)
+}
+
+func Infof(fmt string, v ...interface{}) {
+	dlog.Infof(fmt, v...)
+}
+
+func Infoln(v ...interface{}) {
+	dlog.Infoln(v...)
+}
+func Notice(v ...interface{}) {
+	dlog.Notice(v...)
+}
+
+func Noticef(fmt string, v ...interface{}) {
+	dlog.Noticef(fmt, v...)
+}
+
+func Noticeln(v ...interface{}) {
+	dlog.Noticeln(v...)
+}
+
+func Warn(v ...interface{}) {
+	dlog.Warn(v...)
+}
+
+func Warnf(fmt string, v ...interface{}) {
+	dlog.Warnf(fmt, v...)
+}
+
+func Warnln(v ...interface{}) {
+	dlog.Warnln(v...)
+}
+
+func Error(v ...interface{}) {
+	dlog.Error(v...)
+}
+
+func Errorf(fmt string, v ...interface{}) {
+	dlog.Errorf(fmt, v...)
+}
+
+func Errorln(v ...interface{}) {
+	dlog.Errorln(v...)
+}
+
+func Fatal(v ...interface{}) {
+	dlog.Fatal(v...)
+}
+
+func Fatalf(fmt string, v ...interface{}) {
+	dlog.Fatalf(fmt, v...)
+}
+
+func Fatalln(v ...interface{}) {
+	dlog.Fatalln(v...)
+}
+
+func Panic(v ...interface{}) {
+	dlog.Panic(v...)
+}
+
+func Panicf(fmt string, v ...interface{}) {
+	dlog.Panicf(fmt, v...)
+}
+
+func Panicln(v ...interface{}) {
+	dlog.Panicln(v...)
 }
