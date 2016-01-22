@@ -77,13 +77,35 @@ type Slogger struct {
 }
 
 // New will create a new Slogger object
-func New(out io.Writer, level Level, prefix string, flag int) *Slogger {
+// level's value: "DEBUG", "INFO", "NOTICE", "WARN", "ERROR", "FATAL"
+func New(out io.Writer, level string, prefix string, flag int) *Slogger {
 	l := &Slogger{
 		logger:   stdLog.New(out, prefix, flag),
 		callPath: 3,
 	}
-	l.SetLevel(level)
+
+	lv := parseLevel(level)
+	l.SetLevel(lv)
 	return l
+}
+
+func parseLevel(strLevel string) Level {
+	switch strLevel {
+	case "DEBUG":
+		return DEBUG
+	case "INFO":
+		return INFO
+	case "NOTICE":
+		return NOTICE
+	case "WARN":
+		return WARN
+	case "ERROR":
+		return ERROR
+	case "FATAL":
+		return FATAL
+	default:
+		panic("unkown log level: " + strLevel)
+	}
 }
 
 // func suffix is "Y" is valid implements
@@ -283,7 +305,7 @@ func (l *Slogger) Panicln(v ...interface{}) {
 var dlog *Slogger
 
 func init() {
-	dlog = New(os.Stderr, DEBUG, "", LstdFlags|Lshortfile)
+	dlog = New(os.Stderr, "DEBUG", "", LstdFlags|Lshortfile)
 	dlog.callPath = 4
 }
 
