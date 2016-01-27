@@ -114,7 +114,7 @@ func printImplY(l *Slogger, level level, v ...interface{}) {
 	l.logger.Output(l.callPath, levelName[level]+fmt.Sprint(v...))
 }
 
-func printImplN(l *Slogger, level level, v ...interface{}) {
+func printN(l *Slogger, level level, v ...interface{}) {
 }
 
 func printfImplY(l *Slogger, level level, format string, v ...interface{}) {
@@ -128,31 +128,28 @@ func printlnImplY(l *Slogger, level level, v ...interface{}) {
 	l.logger.Output(l.callPath, levelName[level]+fmt.Sprintln(v...))
 }
 
-func printlnImplN(l *Slogger, level level, v ...interface{}) {
-}
-
 func (l *Slogger) SetLevel(level string) {
 	l.level = parseLevel(level)
 	// init all print func
-	l.debugImpl = printImplN
+	l.debugImpl = printN
 	l.debugfImpl = printfImplN
-	l.debuglnImpl = printlnImplN
+	l.debuglnImpl = printN
 
-	l.infoImpl = printImplN
+	l.infoImpl = printN
 	l.infofImpl = printfImplN
-	l.infolnImpl = printlnImplN
+	l.infolnImpl = printN
 
-	l.noticeImpl = printImplN
+	l.noticeImpl = printN
 	l.noticefImpl = printfImplN
-	l.noticelnImpl = printlnImplN
+	l.noticelnImpl = printN
 
-	l.warnImpl = printImplN
+	l.warnImpl = printN
 	l.warnfImpl = printfImplN
-	l.warnlnImpl = printlnImplN
+	l.warnlnImpl = printN
 
-	l.errorImpl = printImplN
+	l.errorImpl = printN
 	l.errorfImpl = printfImplN
-	l.errorlnImpl = printlnImplN
+	l.errorlnImpl = printN
 
 	// log that level is PANIC and FATAL must be output
 	switch l.level {
