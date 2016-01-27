@@ -11,17 +11,17 @@ import (
 )
 
 // Level is log level
-type Level int
+type level int
 
 // log level definition
 const (
-	DEBUG = iota
-	INFO
-	NOTICE
-	WARN
-	ERROR
-	FATAL
-	_PANIC // need not access it
+	lvDebug = iota
+	lvInfo
+	lvNotice
+	lvWarn
+	lvError
+	lvFatal
+	lvPanic // need not access it
 )
 
 var levelName = []string{"[DEBUG] ", "[INFO] ", "[NOTICE] ", "[WARN] ", "[ERROR] ", "[FATAL] ", "[PANIC] "}
@@ -43,37 +43,37 @@ const (
 
 type Slogger struct {
 	logger *stdLog.Logger
-	level  Level
+	level  level
 	// log.Logger.Output callPath
 	callPath int
 
-	debugImpl   func(l *Slogger, level Level, v ...interface{})
-	debugfImpl  func(l *Slogger, level Level, format string, v ...interface{})
-	debuglnImpl func(l *Slogger, level Level, v ...interface{})
+	debugImpl   func(l *Slogger, level level, v ...interface{})
+	debugfImpl  func(l *Slogger, level level, format string, v ...interface{})
+	debuglnImpl func(l *Slogger, level level, v ...interface{})
 
-	infoImpl   func(l *Slogger, level Level, v ...interface{})
-	infofImpl  func(l *Slogger, level Level, format string, v ...interface{})
-	infolnImpl func(l *Slogger, level Level, v ...interface{})
+	infoImpl   func(l *Slogger, level level, v ...interface{})
+	infofImpl  func(l *Slogger, level level, format string, v ...interface{})
+	infolnImpl func(l *Slogger, level level, v ...interface{})
 
-	noticeImpl   func(l *Slogger, level Level, v ...interface{})
-	noticefImpl  func(l *Slogger, level Level, format string, v ...interface{})
-	noticelnImpl func(l *Slogger, level Level, v ...interface{})
+	noticeImpl   func(l *Slogger, level level, v ...interface{})
+	noticefImpl  func(l *Slogger, level level, format string, v ...interface{})
+	noticelnImpl func(l *Slogger, level level, v ...interface{})
 
-	warnImpl   func(l *Slogger, level Level, v ...interface{})
-	warnfImpl  func(l *Slogger, level Level, format string, v ...interface{})
-	warnlnImpl func(l *Slogger, level Level, v ...interface{})
+	warnImpl   func(l *Slogger, level level, v ...interface{})
+	warnfImpl  func(l *Slogger, level level, format string, v ...interface{})
+	warnlnImpl func(l *Slogger, level level, v ...interface{})
 
-	errorImpl   func(l *Slogger, level Level, v ...interface{})
-	errorfImpl  func(l *Slogger, level Level, format string, v ...interface{})
-	errorlnImpl func(l *Slogger, level Level, v ...interface{})
+	errorImpl   func(l *Slogger, level level, v ...interface{})
+	errorfImpl  func(l *Slogger, level level, format string, v ...interface{})
+	errorlnImpl func(l *Slogger, level level, v ...interface{})
 
-	fatalImpl   func(l *Slogger, level Level, v ...interface{})
-	fatalfImpl  func(l *Slogger, level Level, format string, v ...interface{})
-	fatallnImpl func(l *Slogger, level Level, v ...interface{})
+	fatalImpl   func(l *Slogger, level level, v ...interface{})
+	fatalfImpl  func(l *Slogger, level level, format string, v ...interface{})
+	fatallnImpl func(l *Slogger, level level, v ...interface{})
 
-	panicImpl   func(l *Slogger, level Level, v ...interface{})
-	panicfImpl  func(l *Slogger, level Level, format string, v ...interface{})
-	paniclnImpl func(l *Slogger, level Level, v ...interface{})
+	panicImpl   func(l *Slogger, level level, v ...interface{})
+	panicfImpl  func(l *Slogger, level level, format string, v ...interface{})
+	paniclnImpl func(l *Slogger, level level, v ...interface{})
 }
 
 // New will create a new Slogger object
@@ -84,25 +84,24 @@ func New(out io.Writer, level string, prefix string, flag int) *Slogger {
 		callPath: 3,
 	}
 
-	lv := parseLevel(level)
-	l.SetLevel(lv)
+	l.SetLevel(level)
 	return l
 }
 
-func parseLevel(strLevel string) Level {
+func parseLevel(strLevel string) level {
 	switch strLevel {
 	case "DEBUG":
-		return DEBUG
+		return lvDebug
 	case "INFO":
-		return INFO
+		return lvInfo
 	case "NOTICE":
-		return NOTICE
+		return lvNotice
 	case "WARN":
-		return WARN
+		return lvWarn
 	case "ERROR":
-		return ERROR
+		return lvError
 	case "FATAL":
-		return FATAL
+		return lvFatal
 	default:
 		panic("unkown log level: " + strLevel)
 	}
@@ -111,29 +110,29 @@ func parseLevel(strLevel string) Level {
 // func suffix is "Y" is valid implements
 // func suffix is "N" is empty implements
 
-func printImplY(l *Slogger, level Level, v ...interface{}) {
+func printImplY(l *Slogger, level level, v ...interface{}) {
 	l.logger.Output(l.callPath, levelName[level]+fmt.Sprint(v...))
 }
 
-func printImplN(l *Slogger, level Level, v ...interface{}) {
+func printImplN(l *Slogger, level level, v ...interface{}) {
 }
 
-func printfImplY(l *Slogger, level Level, format string, v ...interface{}) {
+func printfImplY(l *Slogger, level level, format string, v ...interface{}) {
 	l.logger.Output(l.callPath, fmt.Sprintf(levelName[level]+format, v...))
 }
 
-func printfImplN(l *Slogger, level Level, format string, v ...interface{}) {
+func printfImplN(l *Slogger, level level, format string, v ...interface{}) {
 }
 
-func printlnImplY(l *Slogger, level Level, v ...interface{}) {
+func printlnImplY(l *Slogger, level level, v ...interface{}) {
 	l.logger.Output(l.callPath, levelName[level]+fmt.Sprintln(v...))
 }
 
-func printlnImplN(l *Slogger, level Level, v ...interface{}) {
+func printlnImplN(l *Slogger, level level, v ...interface{}) {
 }
 
-func (l *Slogger) SetLevel(level Level) {
-	l.level = level
+func (l *Slogger) SetLevel(level string) {
+	l.level = parseLevel(level)
 	// init all print func
 	l.debugImpl = printImplN
 	l.debugfImpl = printfImplN
@@ -156,147 +155,147 @@ func (l *Slogger) SetLevel(level Level) {
 	l.errorlnImpl = printlnImplN
 
 	// log that level is PANIC and FATAL must be output
-	switch level {
-	case DEBUG:
+	switch l.level {
+	case lvDebug:
 		l.debugImpl = printImplY
 		l.debugfImpl = printfImplY
 		l.debuglnImpl = printlnImplY
 		fallthrough
-	case INFO:
+	case lvInfo:
 		l.infoImpl = printImplY
 		l.infofImpl = printfImplY
 		l.infolnImpl = printlnImplY
 		fallthrough
-	case NOTICE:
+	case lvNotice:
 		l.noticeImpl = printImplY
 		l.noticefImpl = printfImplY
 		l.noticelnImpl = printlnImplY
 		fallthrough
-	case WARN:
+	case lvWarn:
 		l.warnImpl = printImplY
 		l.warnfImpl = printfImplY
 		l.warnlnImpl = printlnImplY
 		fallthrough
-	case ERROR:
+	case lvError:
 		l.errorImpl = printImplY
 		l.errorfImpl = printfImplY
 		l.errorlnImpl = printlnImplY
-	case _PANIC, FATAL:
+	case lvPanic, lvFatal:
 
 	}
 }
 
 // Debug
 func (l *Slogger) Debug(v ...interface{}) {
-	var level Level = DEBUG
+	var level level = lvDebug
 	l.debugImpl(l, level, v...)
 }
 
 func (l *Slogger) Debugf(format string, v ...interface{}) {
-	var level Level = DEBUG
+	var level level = lvDebug
 	l.debugfImpl(l, level, format, v...)
 }
 
 func (l *Slogger) Debugln(v ...interface{}) {
-	var level Level = DEBUG
+	var level level = lvDebug
 	l.debuglnImpl(l, level, v...)
 }
 
 // Info
 func (l *Slogger) Info(v ...interface{}) {
-	var level Level = INFO
+	var level level = lvInfo
 	l.infoImpl(l, level, v...)
 }
 
 func (l *Slogger) Infof(format string, v ...interface{}) {
-	var level Level = INFO
+	var level level = lvInfo
 	l.infofImpl(l, level, format, v...)
 }
 
 func (l *Slogger) Infoln(v ...interface{}) {
-	var level Level = INFO
+	var level level = lvInfo
 	l.infolnImpl(l, level, v...)
 }
 
 // Notice
 func (l *Slogger) Notice(v ...interface{}) {
-	var level Level = NOTICE
+	var level level = lvNotice
 	l.noticeImpl(l, level, v...)
 }
 
 func (l *Slogger) Noticef(format string, v ...interface{}) {
-	var level Level = NOTICE
+	var level level = lvNotice
 	l.noticefImpl(l, level, format, v...)
 }
 
 func (l *Slogger) Noticeln(v ...interface{}) {
-	var level Level = NOTICE
+	var level level = lvNotice
 	l.noticelnImpl(l, level, v...)
 }
 
 // Warn
 func (l *Slogger) Warn(v ...interface{}) {
-	var level Level = WARN
+	var level level = lvWarn
 	l.warnImpl(l, level, v...)
 }
 
 func (l *Slogger) Warnf(format string, v ...interface{}) {
-	var level Level = WARN
+	var level level = lvWarn
 	l.warnfImpl(l, level, format, v...)
 }
 
 func (l *Slogger) Warnln(v ...interface{}) {
-	var level Level = WARN
+	var level level = lvWarn
 	l.warnlnImpl(l, level, v...)
 }
 
 // Error
 func (l *Slogger) Error(v ...interface{}) {
-	var level Level = ERROR
+	var level level = lvError
 	l.errorImpl(l, level, v...)
 }
 
 func (l *Slogger) Errorf(format string, v ...interface{}) {
-	var level Level = ERROR
+	var level level = lvError
 	l.errorfImpl(l, level, format, v...)
 }
 
 func (l *Slogger) Errorln(v ...interface{}) {
-	var level Level = ERROR
+	var level level = lvError
 	l.errorlnImpl(l, level, v...)
 }
 
 // Fatal
 func (l *Slogger) Fatal(v ...interface{}) {
-	l.logger.Output(l.callPath, levelName[FATAL]+fmt.Sprint(v...))
+	l.logger.Output(l.callPath, levelName[lvFatal]+fmt.Sprint(v...))
 	os.Exit(1)
 }
 
 func (l *Slogger) Fatalf(format string, v ...interface{}) {
-	l.logger.Output(l.callPath, fmt.Sprintf(levelName[FATAL]+format, v...))
+	l.logger.Output(l.callPath, fmt.Sprintf(levelName[lvFatal]+format, v...))
 	os.Exit(1)
 }
 
 func (l *Slogger) Fatalln(v ...interface{}) {
-	l.logger.Output(l.callPath, levelName[FATAL]+fmt.Sprintln(v...))
+	l.logger.Output(l.callPath, levelName[lvFatal]+fmt.Sprintln(v...))
 	os.Exit(1)
 }
 
 // Panic
 func (l *Slogger) Panic(v ...interface{}) {
-	s := levelName[_PANIC] + fmt.Sprintln(v...)
+	s := levelName[lvPanic] + fmt.Sprintln(v...)
 	l.logger.Output(l.callPath, s)
 	panic(s)
 }
 
 func (l *Slogger) Panicf(format string, v ...interface{}) {
-	s := fmt.Sprintf(levelName[_PANIC]+format, v...)
+	s := fmt.Sprintf(levelName[lvPanic]+format, v...)
 	l.logger.Output(l.callPath, s)
 	panic(s)
 }
 
 func (l *Slogger) Panicln(v ...interface{}) {
-	s := levelName[_PANIC] + fmt.Sprintln(v...)
+	s := levelName[lvPanic] + fmt.Sprintln(v...)
 	l.logger.Output(l.callPath, s)
 	panic(s)
 }
@@ -309,7 +308,7 @@ func init() {
 	dlog.callPath = 4
 }
 
-func SetLevel(level Level) {
+func SetLevel(level string) {
 	dlog.SetLevel(level)
 }
 
