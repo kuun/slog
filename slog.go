@@ -47,33 +47,26 @@ type Slogger struct {
 	// log.Logger.Output callPath
 	callPath int
 
-	debugImpl   func(l *Slogger, level level, v ...interface{})
-	debugfImpl  func(l *Slogger, level level, format string, v ...interface{})
-	debuglnImpl func(l *Slogger, level level, v ...interface{})
+	debugImpl  func(l *Slogger, level level, v ...interface{})
+	debugfImpl func(l *Slogger, level level, format string, v ...interface{})
 
-	infoImpl   func(l *Slogger, level level, v ...interface{})
-	infofImpl  func(l *Slogger, level level, format string, v ...interface{})
-	infolnImpl func(l *Slogger, level level, v ...interface{})
+	infoImpl  func(l *Slogger, level level, v ...interface{})
+	infofImpl func(l *Slogger, level level, format string, v ...interface{})
 
-	noticeImpl   func(l *Slogger, level level, v ...interface{})
-	noticefImpl  func(l *Slogger, level level, format string, v ...interface{})
-	noticelnImpl func(l *Slogger, level level, v ...interface{})
+	noticeImpl  func(l *Slogger, level level, v ...interface{})
+	noticefImpl func(l *Slogger, level level, format string, v ...interface{})
 
-	warnImpl   func(l *Slogger, level level, v ...interface{})
-	warnfImpl  func(l *Slogger, level level, format string, v ...interface{})
-	warnlnImpl func(l *Slogger, level level, v ...interface{})
+	warnImpl  func(l *Slogger, level level, v ...interface{})
+	warnfImpl func(l *Slogger, level level, format string, v ...interface{})
 
-	errorImpl   func(l *Slogger, level level, v ...interface{})
-	errorfImpl  func(l *Slogger, level level, format string, v ...interface{})
-	errorlnImpl func(l *Slogger, level level, v ...interface{})
+	errorImpl  func(l *Slogger, level level, v ...interface{})
+	errorfImpl func(l *Slogger, level level, format string, v ...interface{})
 
-	fatalImpl   func(l *Slogger, level level, v ...interface{})
-	fatalfImpl  func(l *Slogger, level level, format string, v ...interface{})
-	fatallnImpl func(l *Slogger, level level, v ...interface{})
+	fatalImpl  func(l *Slogger, level level, v ...interface{})
+	fatalfImpl func(l *Slogger, level level, format string, v ...interface{})
 
-	panicImpl   func(l *Slogger, level level, v ...interface{})
-	panicfImpl  func(l *Slogger, level level, format string, v ...interface{})
-	paniclnImpl func(l *Slogger, level level, v ...interface{})
+	panicImpl  func(l *Slogger, level level, v ...interface{})
+	panicfImpl func(l *Slogger, level level, format string, v ...interface{})
 }
 
 // New will create a new Slogger object
@@ -124,59 +117,45 @@ func printfImplY(l *Slogger, level level, format string, v ...interface{}) {
 func printfImplN(l *Slogger, level level, format string, v ...interface{}) {
 }
 
-func printlnImplY(l *Slogger, level level, v ...interface{}) {
-	l.logger.Output(l.callPath, levelName[level]+fmt.Sprintln(v...))
-}
-
 func (l *Slogger) SetLevel(level string) {
 	l.level = parseLevel(level)
 	// init all print func
 	l.debugImpl = printN
 	l.debugfImpl = printfImplN
-	l.debuglnImpl = printN
 
 	l.infoImpl = printN
 	l.infofImpl = printfImplN
-	l.infolnImpl = printN
 
 	l.noticeImpl = printN
 	l.noticefImpl = printfImplN
-	l.noticelnImpl = printN
 
 	l.warnImpl = printN
 	l.warnfImpl = printfImplN
-	l.warnlnImpl = printN
 
 	l.errorImpl = printN
 	l.errorfImpl = printfImplN
-	l.errorlnImpl = printN
 
 	// log that level is PANIC and FATAL must be output
 	switch l.level {
 	case lvDebug:
 		l.debugImpl = printImplY
 		l.debugfImpl = printfImplY
-		l.debuglnImpl = printlnImplY
 		fallthrough
 	case lvInfo:
 		l.infoImpl = printImplY
 		l.infofImpl = printfImplY
-		l.infolnImpl = printlnImplY
 		fallthrough
 	case lvNotice:
 		l.noticeImpl = printImplY
 		l.noticefImpl = printfImplY
-		l.noticelnImpl = printlnImplY
 		fallthrough
 	case lvWarn:
 		l.warnImpl = printImplY
 		l.warnfImpl = printfImplY
-		l.warnlnImpl = printlnImplY
 		fallthrough
 	case lvError:
 		l.errorImpl = printImplY
 		l.errorfImpl = printfImplY
-		l.errorlnImpl = printlnImplY
 	case lvPanic, lvFatal:
 
 	}
@@ -193,11 +172,6 @@ func (l *Slogger) Debugf(format string, v ...interface{}) {
 	l.debugfImpl(l, level, format, v...)
 }
 
-func (l *Slogger) Debugln(v ...interface{}) {
-	var level level = lvDebug
-	l.debuglnImpl(l, level, v...)
-}
-
 // Info
 func (l *Slogger) Info(v ...interface{}) {
 	var level level = lvInfo
@@ -207,11 +181,6 @@ func (l *Slogger) Info(v ...interface{}) {
 func (l *Slogger) Infof(format string, v ...interface{}) {
 	var level level = lvInfo
 	l.infofImpl(l, level, format, v...)
-}
-
-func (l *Slogger) Infoln(v ...interface{}) {
-	var level level = lvInfo
-	l.infolnImpl(l, level, v...)
 }
 
 // Notice
@@ -225,11 +194,6 @@ func (l *Slogger) Noticef(format string, v ...interface{}) {
 	l.noticefImpl(l, level, format, v...)
 }
 
-func (l *Slogger) Noticeln(v ...interface{}) {
-	var level level = lvNotice
-	l.noticelnImpl(l, level, v...)
-}
-
 // Warn
 func (l *Slogger) Warn(v ...interface{}) {
 	var level level = lvWarn
@@ -239,11 +203,6 @@ func (l *Slogger) Warn(v ...interface{}) {
 func (l *Slogger) Warnf(format string, v ...interface{}) {
 	var level level = lvWarn
 	l.warnfImpl(l, level, format, v...)
-}
-
-func (l *Slogger) Warnln(v ...interface{}) {
-	var level level = lvWarn
-	l.warnlnImpl(l, level, v...)
 }
 
 // Error
@@ -257,11 +216,6 @@ func (l *Slogger) Errorf(format string, v ...interface{}) {
 	l.errorfImpl(l, level, format, v...)
 }
 
-func (l *Slogger) Errorln(v ...interface{}) {
-	var level level = lvError
-	l.errorlnImpl(l, level, v...)
-}
-
 // Fatal
 func (l *Slogger) Fatal(v ...interface{}) {
 	l.logger.Output(l.callPath, levelName[lvFatal]+fmt.Sprint(v...))
@@ -270,11 +224,6 @@ func (l *Slogger) Fatal(v ...interface{}) {
 
 func (l *Slogger) Fatalf(format string, v ...interface{}) {
 	l.logger.Output(l.callPath, fmt.Sprintf(levelName[lvFatal]+format, v...))
-	os.Exit(1)
-}
-
-func (l *Slogger) Fatalln(v ...interface{}) {
-	l.logger.Output(l.callPath, levelName[lvFatal]+fmt.Sprintln(v...))
 	os.Exit(1)
 }
 
@@ -317,10 +266,6 @@ func Debugf(fmt string, v ...interface{}) {
 	dlog.Debugf(fmt, v...)
 }
 
-func Debugln(v ...interface{}) {
-	dlog.Debugln(v...)
-}
-
 func Info(v ...interface{}) {
 	dlog.Info(v...)
 }
@@ -329,19 +274,12 @@ func Infof(fmt string, v ...interface{}) {
 	dlog.Infof(fmt, v...)
 }
 
-func Infoln(v ...interface{}) {
-	dlog.Infoln(v...)
-}
 func Notice(v ...interface{}) {
 	dlog.Notice(v...)
 }
 
 func Noticef(fmt string, v ...interface{}) {
 	dlog.Noticef(fmt, v...)
-}
-
-func Noticeln(v ...interface{}) {
-	dlog.Noticeln(v...)
 }
 
 func Warn(v ...interface{}) {
@@ -352,20 +290,12 @@ func Warnf(fmt string, v ...interface{}) {
 	dlog.Warnf(fmt, v...)
 }
 
-func Warnln(v ...interface{}) {
-	dlog.Warnln(v...)
-}
-
 func Error(v ...interface{}) {
 	dlog.Error(v...)
 }
 
 func Errorf(fmt string, v ...interface{}) {
 	dlog.Errorf(fmt, v...)
-}
-
-func Errorln(v ...interface{}) {
-	dlog.Errorln(v...)
 }
 
 func Fatal(v ...interface{}) {
@@ -376,18 +306,10 @@ func Fatalf(fmt string, v ...interface{}) {
 	dlog.Fatalf(fmt, v...)
 }
 
-func Fatalln(v ...interface{}) {
-	dlog.Fatalln(v...)
-}
-
 func Panic(v ...interface{}) {
 	dlog.Panic(v...)
 }
 
 func Panicf(fmt string, v ...interface{}) {
 	dlog.Panicf(fmt, v...)
-}
-
-func Panicln(v ...interface{}) {
-	dlog.Panicln(v...)
 }

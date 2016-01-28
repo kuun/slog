@@ -21,31 +21,24 @@ func testAll(out io.Writer, level string, prefix string, flag int) {
 
 	logger.Debug("my computer is ", testComputer.name, ", core num is ", testComputer.core)
 	logger.Debugf(format, testComputer.name, testComputer.core)
-	logger.Debugln("my computer is", testComputer.name, ", core num is", testComputer.core)
 
 	logger.Info("my computer is ", testComputer.name, ", core num is ", testComputer.core)
 	logger.Infof(format, testComputer.name, testComputer.core)
-	logger.Infoln("my computer is", testComputer.name, ", core num is", testComputer.core)
 
 	logger.Notice("my computer is ", testComputer.name, ", core num is ", testComputer.core)
 	logger.Noticef(format, testComputer.name, testComputer.core)
-	logger.Noticeln("my computer is", testComputer.name, ", core num is", testComputer.core)
 
 	logger.Warn("my computer is ", testComputer.name, ", core num is ", testComputer.core)
 	logger.Warnf(format, testComputer.name, testComputer.core)
-	logger.Warnln("my computer is", testComputer.name, ", core num is", testComputer.core)
 
 	logger.Error("my computer is ", testComputer.name, ", core num is ", testComputer.core)
 	logger.Errorf(format, testComputer.name, testComputer.core)
-	logger.Errorln("my computer is", testComputer.name, ", core num is", testComputer.core)
 
 	/*logger.Fatal("my computer is ", testComputer.name, ", core num is ", testComputer.core)*/
 	/*logger.Fatalf(format, testComputer.name, testComputer.core)*/
-	/*logger.Fatalln("my computer is", testComputer.name, ", core num is", testComputer.core)*/
 
 	/*logger.Panic("my computer is ", testComputer.name, ", core num is ", testComputer.core)*/
 	/*logger.Panicf(format, testComputer.name, testComputer.core)*/
-	/*logger.Panicln("my computer is", testComputer.name, ", core num is", testComputer.core)*/
 }
 
 func TestOut(t *testing.T) {
@@ -98,22 +91,17 @@ func TestDefaultLog(t *testing.T) {
 
 		Debug("my computer is ", testComputer.name, ", core num is ", testComputer.core)
 		Debugf(format, testComputer.name, testComputer.core)
-		Debugln("my computer is", testComputer.name, ", core num is", testComputer.core)
 
 		Info("my computer is ", testComputer.name, ", core num is ", testComputer.core)
 		Infof(format, testComputer.name, testComputer.core)
-		Infoln("my computer is", testComputer.name, ", core num is", testComputer.core)
 
 		Notice("my computer is ", testComputer.name, ", core num is ", testComputer.core)
 		Noticef(format, testComputer.name, testComputer.core)
-		Noticeln("my computer is", testComputer.name, ", core num is", testComputer.core)
 
 		Warn("my computer is ", testComputer.name, ", core num is ", testComputer.core)
 		Warnf(format, testComputer.name, testComputer.core)
-		Warnln("my computer is", testComputer.name, ", core num is", testComputer.core)
 
 		Error("my computer is ", testComputer.name, ", core num is ", testComputer.core)
 		Errorf(format, testComputer.name, testComputer.core)
-		Errorln("my computer is", testComputer.name, ", core num is", testComputer.core)
 	}
 }
