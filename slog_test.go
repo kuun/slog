@@ -12,8 +12,8 @@ type computer struct {
 	core int
 }
 
-func testAll(out io.Writer, level string, prefix string, flag int) {
-	logger := New(out, level, prefix, flag)
+func testAll(out io.Writer, level string, prefix string) {
+	logger := GetLogger()
 
 	testComputer := computer{"mycomputer", 4}
 
@@ -46,62 +46,36 @@ func TestOut(t *testing.T) {
 	file, _ := os.OpenFile("/tmp/test.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	defer file.Close()
 	/*file, _:= os.Open("/tmp/test.log")*/
-	testAll(file, "DEBUG", "", Ldate|Ltime|Lmicroseconds|Lshortfile)
+	testAll(file, "DEBUG", "")
 }
 
 func TestDebug(t *testing.T) {
 	fmt.Println("========================================DEBUG========================================")
-	testAll(os.Stdout, "DEBUG", "", Ldate|Ltime|Lmicroseconds|Lshortfile)
+	testAll(os.Stdout, "DEBUG", "")
 }
 
 func TestInfo(t *testing.T) {
 	fmt.Println("========================================INFO========================================")
-	testAll(os.Stdout, "INFO", "", Ldate|Ltime|Lmicroseconds|Lshortfile)
+	testAll(os.Stdout, "INFO", "")
 }
 
 func TestNotice(t *testing.T) {
 	fmt.Println("========================================NOTICE========================================")
-	testAll(os.Stdout, "NOTICE", "", Ldate|Ltime|Lmicroseconds|Lshortfile)
+	testAll(os.Stdout, "NOTICE", "")
 }
 
 func TestWarn(t *testing.T) {
 	fmt.Println("========================================WARN========================================")
-	testAll(os.Stdout, "WARN", "", Ldate|Ltime|Lmicroseconds|Lshortfile)
+	testAll(os.Stdout, "WARN", "")
 }
 
 func TestError(t *testing.T) {
 	fmt.Println("========================================ERROR========================================")
-	testAll(os.Stdout, "ERROR", "", Ldate|Ltime|Lmicroseconds|Lshortfile)
+	testAll(os.Stdout, "ERROR", "")
 }
 
 func TestFatal(t *testing.T) {
 	fmt.Println("========================================FATAL========================================")
-	testAll(os.Stdout, "FATAL", "", Ldate|Ltime|Lmicroseconds|Lshortfile)
+	testAll(os.Stdout, "FATAL", "")
 }
 
-func TestDefaultLog(t *testing.T) {
-	fmt.Println("========================================Default DEBUG========================================")
-
-	levels := []string{"DEBUG", "INFO", "NOTICE", "WARN", "ERROR", "FATAL"}
-	format := "my computer is %s, core num is %v\n"
-	for i, level := range levels {
-		fmt.Printf("Log Level: %s\n", levelName[i])
-		testComputer := computer{"mycomputer", 4}
-		SetLevel(level)
-
-		Debug("my computer is ", testComputer.name, ", core num is ", testComputer.core)
-		Debugf(format, testComputer.name, testComputer.core)
-
-		Info("my computer is ", testComputer.name, ", core num is ", testComputer.core)
-		Infof(format, testComputer.name, testComputer.core)
-
-		Notice("my computer is ", testComputer.name, ", core num is ", testComputer.core)
-		Noticef(format, testComputer.name, testComputer.core)
-
-		Warn("my computer is ", testComputer.name, ", core num is ", testComputer.core)
-		Warnf(format, testComputer.name, testComputer.core)
-
-		Error("my computer is ", testComputer.name, ", core num is ", testComputer.core)
-		Errorf(format, testComputer.name, testComputer.core)
-	}
-}
