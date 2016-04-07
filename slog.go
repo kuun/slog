@@ -255,11 +255,11 @@ func doGetLogger(fullPath, abbrPath string) Logger {
 			logger = loggers[fullPath]
 			if logger == nil {
 				logger = &loggerImpl{
-					level:    parseLevel(logConf.Level),
 					fullPath: fullPath,
 					abbrPath: abbrPath,
 					writers:  getLogWriters(logConf.Writers),
 				}
+				logger.SetLevel(logConf.Level)
 				loggers[fullPath] = logger
 			}
 			return logger
@@ -271,7 +271,7 @@ func doGetLogger(fullPath, abbrPath string) Logger {
 
 func getLogWriters(writerNames []string) []writer.LogWriter {
 	size := len(writerNames)
-	wrs := make([]writer.LogWriter, size, size)
+	wrs := make([]writer.LogWriter, 0, size)
 	for _, wrConf := range writerNames {
 		wr := writers[wrConf]
 		wr.Run()

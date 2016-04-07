@@ -2,7 +2,6 @@ package slog
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"testing"
 )
@@ -12,16 +11,16 @@ type computer struct {
 	core int
 }
 
-func testAll(out io.Writer, level string, prefix string) {
+func testAll(level string, prefix string) {
 	logger := GetLogger()
-
+	logger.SetLevel(level)
 	testComputer := computer{"mycomputer", 4}
+	//fmt.Printf("logger: %#v\n", logger)
 
-	format := "my computer is %s, core num is %v\n"
+	format := "my computer is %s, core num is %v"
 
 	logger.Debug("my computer is ", testComputer.name, ", core num is ", testComputer.core)
 	logger.Debugf(format, testComputer.name, testComputer.core)
-
 	logger.Info("my computer is ", testComputer.name, ", core num is ", testComputer.core)
 	logger.Infof(format, testComputer.name, testComputer.core)
 
@@ -36,9 +35,6 @@ func testAll(out io.Writer, level string, prefix string) {
 
 	/*logger.Fatal("my computer is ", testComputer.name, ", core num is ", testComputer.core)*/
 	/*logger.Fatalf(format, testComputer.name, testComputer.core)*/
-
-	/*logger.Panic("my computer is ", testComputer.name, ", core num is ", testComputer.core)*/
-	/*logger.Panicf(format, testComputer.name, testComputer.core)*/
 }
 
 func TestOut(t *testing.T) {
@@ -46,36 +42,36 @@ func TestOut(t *testing.T) {
 	file, _ := os.OpenFile("/tmp/test.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	defer file.Close()
 	/*file, _:= os.Open("/tmp/test.log")*/
-	testAll(file, "DEBUG", "")
+	testAll("DEBUG", "")
 }
 
 func TestDebug(t *testing.T) {
 	fmt.Println("========================================DEBUG========================================")
-	testAll(os.Stdout, "DEBUG", "")
+	testAll("DEBUG", "")
 }
 
 func TestInfo(t *testing.T) {
 	fmt.Println("========================================INFO========================================")
-	testAll(os.Stdout, "INFO", "")
+	testAll("INFO", "")
 }
 
 func TestNotice(t *testing.T) {
 	fmt.Println("========================================NOTICE========================================")
-	testAll(os.Stdout, "NOTICE", "")
+	testAll("NOTICE", "")
 }
 
 func TestWarn(t *testing.T) {
 	fmt.Println("========================================WARN========================================")
-	testAll(os.Stdout, "WARN", "")
+	testAll("WARN", "")
 }
 
 func TestError(t *testing.T) {
 	fmt.Println("========================================ERROR========================================")
-	testAll(os.Stdout, "ERROR", "")
+	testAll("ERROR", "")
 }
 
 func TestFatal(t *testing.T) {
 	fmt.Println("========================================FATAL========================================")
-	testAll(os.Stdout, "FATAL", "")
+	testAll("FATAL", "")
 }
 
