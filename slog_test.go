@@ -75,3 +75,46 @@ func TestFatal(t *testing.T) {
 	testAll("FATAL", "")
 }
 
+//func TestGetLogPath(t *testing.T) {
+//	fullPath, shortPath := getLogPath()
+//
+//	expectFullPath := "github.com/kuun/slog"
+//	expectShortPath := "g/k/slog"
+//	if fullPath !=  expectFullPath{
+//		t.Errorf("log full path is: %s, expect: %s", fullPath, expectFullPath)
+//	}
+//	if shortPath != expectShortPath {
+//		t.Errorf("log short path is: %s, expect: %s", shortPath, expectShortPath)
+//	}
+//}
+
+func TestLevel(t *testing.T) {
+	t.Log("test log level")
+	logger := GetLogger()
+
+	if parseLevel(lvNameDebug) != lvDebug {
+		t.Errorf("parse log level name error, level: %s", lvNameDebug)
+	}
+	if parseLevel(lvNameInfo) != lvInfo {
+		t.Errorf("parse log level name error, level: %s", lvNameInfo)
+	}
+	if parseLevel(lvNameNotice) != lvNotice {
+		t.Errorf("parse log level name error, level: %s", lvNameNotice)
+	}
+	if parseLevel(lvNameWarn) != lvWarn {
+		t.Errorf("parse log level name error, level: %s", lvNameWarn)
+	}
+	if parseLevel(lvNameError) != lvError {
+		t.Errorf("parse log level name error, level: %s", lvNameError)
+	}
+	if parseLevel(lvNameFatal) != lvFatal {
+		t.Errorf("parse log level name error, level: %s", lvNameFatal)
+	}
+	for _, level := range []string{lvNameDebug, lvNameInfo, lvNameNotice, lvNameWarn, lvNameError, lvNameFatal} {
+		logger.SetLevel(level)
+		if logger.GetLevel() != level {
+			t.Errorf("test log level error: %s", level)
+		}
+	}
+	logger.SetLevel("DEBUG")
+}
