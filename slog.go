@@ -18,49 +18,67 @@ import (
 // Level is log level
 type level int
 
+// log level definition
+const (
+	Debug = iota
+	Info
+	Notice
+	Warn
+	Error
+	Fatal
+)
+
+// log level name
+const (
+	LvNameDebug  = "DEBUG"
+	LvNameInfo   = "INFO"
+	LvNameNotice = "NOTICE"
+	LvNameWarn   = "WARN"
+	LvNameError  = "ERROR"
+	LvNameFatal  = "FATAL"
+)
+
 func (lv level) String() string {
 	switch lv {
-	case lvDebug:
+	case Debug:
 		return "DEBUG"
-	case lvInfo:
+	case Info:
 		return "INFO"
-	case lvNotice:
+	case Notice:
 		return "NOTICE"
-	case lvWarn:
+	case Warn:
 		return "WARN"
-	case lvError:
+	case Error:
 		return "ERROR"
-	case lvFatal:
+	case Fatal:
 		return "FATAL"
 	default:
 		return "UNKOWN"
 	}
 }
 
-// log level definition
-const (
-	lvDebug = iota
-	lvInfo
-	lvNotice
-	lvWarn
-	lvError
-	lvFatal
-	lvPanic // need not access it
-)
-
-// log level name
-const (
-	lvNameDebug  = "DEBUG"
-	lvNameInfo   = "INFO"
-	lvNameNotice = "NOTICE"
-	lvNameWarn   = "WARN"
-	lvNameError  = "ERROR"
-	lvNameFatal  = "FATAL"
-)
+func parseLevel(strLevel string) (level, bool) {
+	switch strLevel {
+	case LvNameDebug:
+		return Debug, true
+	case LvNameInfo:
+		return Info, true
+	case LvNameNotice:
+		return Notice, true
+	case LvNameWarn:
+		return Warn, true
+	case LvNameError:
+		return Error, true
+	case LvNameFatal:
+		return Fatal, true
+	default:
+		return -1, false
+	}
+}
 
 type Logger interface {
 	GetLevel() string
-	SetLevel(lv string)
+	SetLevel(lv string) error
 
 	Debug(v ...interface{})
 	Debugf(fmt string, v ...interface{})
@@ -162,9 +180,9 @@ func initWriters() error {
 
 func verifyConf() error {
 	if len(conf.Loggers) == 0 {
-		conf.Loggers = append(conf.Loggers,logConf{
+		conf.Loggers = append(conf.Loggers, logConf{
 			Pattern: "*",
-			Level: lvNameDebug,
+			Level:   LvNameDebug,
 			Writers: []string{"STDOUT"},
 		})
 	}
@@ -189,7 +207,7 @@ func verifyConf() error {
 
 func verifyLogLevel(level string) error {
 	switch level {
-	case lvNameDebug, lvNameInfo, lvNameNotice, lvNameWarn, lvNameError, lvNameFatal:
+	case LvNameDebug, LvNameInfo, LvNameNotice, LvNameWarn, LvNameError, LvNameFatal:
 		return nil
 	default:
 		return errors.New("unkown log level name: " + level)
@@ -198,7 +216,11 @@ func verifyLogLevel(level string) error {
 
 func GetLogger() Logger {
 	fullPath, abbrPath := getLogPath()
-	return doGetLogger(fullPath, abbrPath)
+	if logger, ok := loggers[fullPath]; ok {
+		return logger
+	} else {
+		return doGetLogger(fullPath, abbrPath)
+	}
 }
 
 func GetLoggerWithPath(path string) Logger {
@@ -266,24 +288,5 @@ func isWildMatch(pattern, str string) bool {
 		return strings.HasPrefix(str, pattern[:patternLen-1])
 	} else {
 		return pattern == str
-	}
-}
-
-func parseLevel(strLevel string) level {
-	switch strLevel {
-	case "DEBUG":
-		return lvDebug
-	case "INFO":
-		return lvInfo
-	case "NOTICE":
-		return lvNotice
-	case "WARN":
-		return lvWarn
-	case "ERROR":
-		return lvError
-	case "FATAL":
-		return lvFatal
-	default:
-		panic("unkown log level: " + strLevel)
 	}
 }

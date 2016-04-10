@@ -2,16 +2,16 @@ package writer
 
 import (
 	"fmt"
-	"os"
 	"github.com/kuun/slog/buffer"
+	"os"
 )
 
 type fileWriter struct {
-	wType     WriterType  // writer type
-	name      string      // writer name
-	file      *os.File    // log file
+	wType     WriterType          // writer type
+	name      string              // writer name
+	file      *os.File            // log file
 	cacheChn  chan *buffer.Buffer // cache buffers that will be writing.
-	isRunning bool        // if writer's writing gorotine is running
+	isRunning bool                // if writer's writing gorotine is running
 }
 
 const fileWriterCache = 50

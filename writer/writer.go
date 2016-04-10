@@ -5,7 +5,7 @@ import "github.com/kuun/slog/buffer"
 type WriterType string
 
 const (
-	FILE   = "FILE"
+	FILE = "FILE"
 )
 
 type LogWriter interface {
@@ -16,6 +16,3 @@ type LogWriter interface {
 	Run()
 	Close()
 }
-
-
-

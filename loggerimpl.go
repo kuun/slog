@@ -2,12 +2,14 @@ package slog
 
 import (
 	"fmt"
-	"github.com/kuun/slog/buffer"
-	"github.com/kuun/slog/writer"
 	"os"
 	"runtime"
 	"strings"
 	"time"
+
+	"errors"
+	"github.com/kuun/slog/buffer"
+	"github.com/kuun/slog/writer"
 )
 
 var levelChars = [6]byte{'D', 'I', 'N', 'W', 'E', 'F'}
@@ -44,7 +46,7 @@ type loggerImpl struct {
 // func suffix is "N" is empty implements
 
 func printImplY(l *loggerImpl, level level, v ...interface{}) {
-	buff := l.header(level, 4)
+	buff := l.header(level)
 	buff.WriteString(fmt.Sprint(v...))
 	buff.WriteByte('\n')
 	for _, wr := range l.writers {
@@ -56,7 +58,7 @@ func printN(l *loggerImpl, level level, v ...interface{}) {
 }
 
 func printfImplY(l *loggerImpl, level level, format string, v ...interface{}) {
-	buff := l.header(level, 4)
+	buff := l.header(level)
 	buff.WriteString(fmt.Sprintf(format, v...))
 	buff.WriteByte('\n')
 	for _, wr := range l.writers {
@@ -71,8 +73,12 @@ func (l *loggerImpl) GetLevel() string {
 	return l.level.String()
 }
 
-func (l *loggerImpl) SetLevel(level string) {
-	l.level = parseLevel(level)
+func (l *loggerImpl) SetLevel(level string) error {
+	if lv, ok := parseLevel(level); ok {
+		l.level = lv
+	} else {
+		return errors.New("unkown log level")
+	}
 	// init all print func
 	l.debugImpl = printN
 	l.debugfImpl = printfImplN
@@ -91,95 +97,96 @@ func (l *loggerImpl) SetLevel(level string) {
 
 	// log that level is PANIC and FATAL must be output
 	switch l.level {
-	case lvDebug:
+	case Debug:
 		l.debugImpl = printImplY
 		l.debugfImpl = printfImplY
 		fallthrough
-	case lvInfo:
+	case Info:
 		l.infoImpl = printImplY
 		l.infofImpl = printfImplY
 		fallthrough
-	case lvNotice:
+	case Notice:
 		l.noticeImpl = printImplY
 		l.noticefImpl = printfImplY
 		fallthrough
-	case lvWarn:
+	case Warn:
 		l.warnImpl = printImplY
 		l.warnfImpl = printfImplY
 		fallthrough
-	case lvError:
+	case Error:
 		l.errorImpl = printImplY
 		l.errorfImpl = printfImplY
-	case lvFatal:
+	case Fatal:
 		l.fatalImpl = printImplY
 		l.fatalfImpl = printfImplY
 	}
+	return nil
 }
 
 // Debug
 func (l *loggerImpl) Debug(v ...interface{}) {
-	var level level = lvDebug
+	var level level = Debug
 	l.debugImpl(l, level, v...)
 }
 
 func (l *loggerImpl) Debugf(format string, v ...interface{}) {
-	var level level = lvDebug
+	var level level = Debug
 	l.debugfImpl(l, level, format, v...)
 }
 
 // Info
 func (l *loggerImpl) Info(v ...interface{}) {
-	var level level = lvInfo
+	var level level = Info
 	l.infoImpl(l, level, v...)
 }
 
 func (l *loggerImpl) Infof(format string, v ...interface{}) {
-	var level level = lvInfo
+	var level level = Info
 	l.infofImpl(l, level, format, v...)
 }
 
 // Notice
 func (l *loggerImpl) Notice(v ...interface{}) {
-	var level level = lvNotice
+	var level level = Notice
 	l.noticeImpl(l, level, v...)
 }
 
 func (l *loggerImpl) Noticef(format string, v ...interface{}) {
-	var level level = lvNotice
+	var level level = Notice
 	l.noticefImpl(l, level, format, v...)
 }
 
 // Warn
 func (l *loggerImpl) Warn(v ...interface{}) {
-	var level level = lvWarn
+	var level level = Warn
 	l.warnImpl(l, level, v...)
 }
 
 func (l *loggerImpl) Warnf(format string, v ...interface{}) {
-	var level level = lvWarn
+	var level level = Warn
 	l.warnfImpl(l, level, format, v...)
 }
 
 // Error
 func (l *loggerImpl) Error(v ...interface{}) {
-	var level level = lvError
+	var level level = Error
 	l.errorImpl(l, level, v...)
 }
 
 func (l *loggerImpl) Errorf(format string, v ...interface{}) {
-	var level level = lvError
+	var level level = Error
 	l.errorfImpl(l, level, format, v...)
 }
 
 // Fatal
 func (l *loggerImpl) Fatal(v ...interface{}) {
-	var level level = lvFatal
+	var level level = Fatal
 	l.fatalImpl(l, level, v...)
 	os.Exit(1)
 }
 
 func (l *loggerImpl) Fatalf(format string, v ...interface{}) {
-	var level level = lvFatal
+	var level level = Fatal
 	l.fatalfImpl(l, level, format, v...)
 	os.Exit(1)
 }
@@ -188,24 +195,21 @@ func (l *loggerImpl) Fatalf(format string, v ...interface{}) {
 // these codes are from github/golang/glog
 //
 
-/*
-header formats a log header as defined by the C++ implementation.
-It returns a buffer containing the formatted header and the user's file and line number.
-The depth specifies how many stack frames above lives the source line to be identified in the log message.
-Log lines have this form:
-	Lmmdd hh:mm:ss.uuuuuu threadid file:line] msg...
-where the fields are defined as follows:
-	L                A single character, representing the log level (eg 'I' for INFO)
-	mm               The month (zero padded; ie May is '05')
-	dd               The day (zero padded)
-	hh:mm:ss.uuuuuu  Time in hours, minutes and fractional seconds
-	threadid         The space-padded thread ID as returned by GetTID()
-	file             The file name
-	line             The line number
-	msg              The user-supplied message
-*/
-func (l *loggerImpl) header(lv level, depth int) *buffer.Buffer {
-	_, file, line, ok := runtime.Caller(3 + depth)
+// header formats a log header and returns a buffer containing the formatted
+// header and the user's file and line number.
+// Log lines have this form:
+// 	L mmdd hh:mm:ss.uuuuuu threadid file:line] msg...
+// where the fields are defined as follows:
+// 	L                A single character, representing the log level (eg 'I' for INFO)
+// 	mm               The month (zero padded; ie May is '05')
+// 	dd               The day (zero padded)
+// 	hh:mm:ss.uuuuuu  Time in hours, minutes and fractional seconds
+// 	threadid         The space-padded thread ID as returned by GetTID()
+// 	file             The file name
+// 	line             The line number
+// 	msg              The user-supplied message
+func (l *loggerImpl) header(lv level) *buffer.Buffer {
+	_, file, line, ok := runtime.Caller(3)
 	if !ok {
 		file = "???"
 		line = 1

@@ -2,8 +2,8 @@ package slog
 
 import (
 	"fmt"
-	"os"
 	"testing"
+	"time"
 )
 
 type computer struct {
@@ -18,6 +18,8 @@ func testAll(level string, prefix string) {
 	//fmt.Printf("logger: %#v\n", logger)
 
 	format := "my computer is %s, core num is %v"
+
+	time.Sleep(100 * time.Millisecond)
 
 	logger.Debug("my computer is ", testComputer.name, ", core num is ", testComputer.core)
 	logger.Debugf(format, testComputer.name, testComputer.core)
@@ -37,41 +39,38 @@ func testAll(level string, prefix string) {
 	/*logger.Fatalf(format, testComputer.name, testComputer.core)*/
 }
 
-func TestOut(t *testing.T) {
-	// test write to file
-	file, _ := os.OpenFile("/tmp/test.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-	defer file.Close()
-	/*file, _:= os.Open("/tmp/test.log")*/
-	testAll("DEBUG", "")
-}
-
 func TestDebug(t *testing.T) {
-	fmt.Println("========================================DEBUG========================================")
+	fmt.Println("======================DEBUG======================")
 	testAll("DEBUG", "")
 }
 
 func TestInfo(t *testing.T) {
-	fmt.Println("========================================INFO========================================")
+	time.Sleep(100 * time.Millisecond)
+	fmt.Println("======================INFO======================")
 	testAll("INFO", "")
 }
 
 func TestNotice(t *testing.T) {
-	fmt.Println("========================================NOTICE========================================")
+	time.Sleep(100 * time.Millisecond)
+	fmt.Println("======================NOTICE======================")
 	testAll("NOTICE", "")
 }
 
 func TestWarn(t *testing.T) {
-	fmt.Println("========================================WARN========================================")
+	time.Sleep(100 * time.Millisecond)
+	fmt.Println("======================WARN======================")
 	testAll("WARN", "")
 }
 
 func TestError(t *testing.T) {
-	fmt.Println("========================================ERROR========================================")
+	time.Sleep(100 * time.Millisecond)
+	fmt.Println("======================ERROR======================")
 	testAll("ERROR", "")
 }
 
 func TestFatal(t *testing.T) {
-	fmt.Println("========================================FATAL========================================")
+	time.Sleep(100 * time.Millisecond)
+	fmt.Println("======================FATAL======================")
 	testAll("FATAL", "")
 }
 
@@ -92,29 +91,28 @@ func TestLevel(t *testing.T) {
 	t.Log("test log level")
 	logger := GetLogger()
 
-	if parseLevel(lvNameDebug) != lvDebug {
-		t.Errorf("parse log level name error, level: %s", lvNameDebug)
+	if lv, _ := parseLevel(LvNameDebug); lv != Debug {
+		t.Errorf("parse log level name error, level: %s", LvNameDebug)
 	}
-	if parseLevel(lvNameInfo) != lvInfo {
-		t.Errorf("parse log level name error, level: %s", lvNameInfo)
+	if lv, _ := parseLevel(LvNameInfo); lv != Info {
+		t.Errorf("parse log level name error, level: %s", LvNameInfo)
 	}
-	if parseLevel(lvNameNotice) != lvNotice {
-		t.Errorf("parse log level name error, level: %s", lvNameNotice)
+	if lv, _ := parseLevel(LvNameNotice); lv != Notice {
+		t.Errorf("parse log level name error, level: %s", LvNameNotice)
 	}
-	if parseLevel(lvNameWarn) != lvWarn {
-		t.Errorf("parse log level name error, level: %s", lvNameWarn)
+	if lv, _ := parseLevel(LvNameWarn); lv != Warn {
+		t.Errorf("parse log level name error, level: %s", LvNameWarn)
 	}
-	if parseLevel(lvNameError) != lvError {
-		t.Errorf("parse log level name error, level: %s", lvNameError)
+	if lv, _ := parseLevel(LvNameError); lv != Error {
+		t.Errorf("parse log level name error, level: %s", LvNameError)
 	}
-	if parseLevel(lvNameFatal) != lvFatal {
-		t.Errorf("parse log level name error, level: %s", lvNameFatal)
+	if lv, _ := parseLevel(LvNameFatal); lv != Fatal {
+		t.Errorf("parse log level name error, level: %s", LvNameFatal)
 	}
-	for _, level := range []string{lvNameDebug, lvNameInfo, lvNameNotice, lvNameWarn, lvNameError, lvNameFatal} {
+	for _, level := range []string{LvNameDebug, LvNameInfo, LvNameNotice, LvNameWarn, LvNameError, LvNameFatal} {
 		logger.SetLevel(level)
 		if logger.GetLevel() != level {
 			t.Errorf("test log level error: %s", level)
 		}
 	}
-	logger.SetLevel("DEBUG")
 }
