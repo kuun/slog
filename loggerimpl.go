@@ -15,37 +15,37 @@ import (
 var levelChars = [6]byte{'D', 'I', 'N', 'W', 'E', 'F'}
 
 type loggerImpl struct {
-	level    level
-	writers  []writer.LogWriter
-	fullPath string
-	abbrPath string
+	level       Level
+	writers     []writer.LogWriter
+	fullPath    string
+	abbrPath    string
 
 	// log.Logger.Output callPath
-	callPath int
+	callPath    int
 
-	debugImpl  func(l *loggerImpl, level level, v ...interface{})
-	debugfImpl func(l *loggerImpl, level level, format string, v ...interface{})
+	debugImpl   func(l *loggerImpl, level Level, v ...interface{})
+	debugfImpl  func(l *loggerImpl, level Level, format string, v ...interface{})
 
-	infoImpl  func(l *loggerImpl, level level, v ...interface{})
-	infofImpl func(l *loggerImpl, level level, format string, v ...interface{})
+	infoImpl    func(l *loggerImpl, level Level, v ...interface{})
+	infofImpl   func(l *loggerImpl, level Level, format string, v ...interface{})
 
-	noticeImpl  func(l *loggerImpl, level level, v ...interface{})
-	noticefImpl func(l *loggerImpl, level level, format string, v ...interface{})
+	noticeImpl  func(l *loggerImpl, level Level, v ...interface{})
+	noticefImpl func(l *loggerImpl, level Level, format string, v ...interface{})
 
-	warnImpl  func(l *loggerImpl, level level, v ...interface{})
-	warnfImpl func(l *loggerImpl, level level, format string, v ...interface{})
+	warnImpl    func(l *loggerImpl, level Level, v ...interface{})
+	warnfImpl   func(l *loggerImpl, level Level, format string, v ...interface{})
 
-	errorImpl  func(l *loggerImpl, level level, v ...interface{})
-	errorfImpl func(l *loggerImpl, level level, format string, v ...interface{})
+	errorImpl   func(l *loggerImpl, level Level, v ...interface{})
+	errorfImpl  func(l *loggerImpl, level Level, format string, v ...interface{})
 
-	fatalImpl  func(l *loggerImpl, level level, v ...interface{})
-	fatalfImpl func(l *loggerImpl, level level, format string, v ...interface{})
+	fatalImpl   func(l *loggerImpl, level Level, v ...interface{})
+	fatalfImpl  func(l *loggerImpl, level Level, format string, v ...interface{})
 }
 
 // func suffix is "Y" is valid implements
 // func suffix is "N" is empty implements
 
-func printImplY(l *loggerImpl, level level, v ...interface{}) {
+func printImplY(l *loggerImpl, level Level, v ...interface{}) {
 	buff := l.header(level)
 	buff.WriteString(fmt.Sprint(v...))
 	buff.WriteByte('\n')
@@ -54,10 +54,10 @@ func printImplY(l *loggerImpl, level level, v ...interface{}) {
 	}
 }
 
-func printN(l *loggerImpl, level level, v ...interface{}) {
+func printN(l *loggerImpl, level Level, v ...interface{}) {
 }
 
-func printfImplY(l *loggerImpl, level level, format string, v ...interface{}) {
+func printfImplY(l *loggerImpl, level Level, format string, v ...interface{}) {
 	buff := l.header(level)
 	buff.WriteString(fmt.Sprintf(format, v...))
 	buff.WriteByte('\n')
@@ -66,7 +66,7 @@ func printfImplY(l *loggerImpl, level level, format string, v ...interface{}) {
 	}
 }
 
-func printfImplN(l *loggerImpl, level level, format string, v ...interface{}) {
+func printfImplN(l *loggerImpl, level Level, format string, v ...interface{}) {
 }
 
 func (l *loggerImpl) GetLevel() string {
@@ -123,70 +123,74 @@ func (l *loggerImpl) SetLevel(level string) error {
 	return nil
 }
 
+func (l *loggerImpl)Above(lv Level) bool {
+	return lv >= l.level
+}
+
 // Debug
 func (l *loggerImpl) Debug(v ...interface{}) {
-	var level level = Debug
+	var level Level = Debug
 	l.debugImpl(l, level, v...)
 }
 
 func (l *loggerImpl) Debugf(format string, v ...interface{}) {
-	var level level = Debug
+	var level Level = Debug
 	l.debugfImpl(l, level, format, v...)
 }
 
 // Info
 func (l *loggerImpl) Info(v ...interface{}) {
-	var level level = Info
+	var level Level = Info
 	l.infoImpl(l, level, v...)
 }
 
 func (l *loggerImpl) Infof(format string, v ...interface{}) {
-	var level level = Info
+	var level Level = Info
 	l.infofImpl(l, level, format, v...)
 }
 
 // Notice
 func (l *loggerImpl) Notice(v ...interface{}) {
-	var level level = Notice
+	var level Level = Notice
 	l.noticeImpl(l, level, v...)
 }
 
 func (l *loggerImpl) Noticef(format string, v ...interface{}) {
-	var level level = Notice
+	var level Level = Notice
 	l.noticefImpl(l, level, format, v...)
 }
 
 // Warn
 func (l *loggerImpl) Warn(v ...interface{}) {
-	var level level = Warn
+	var level Level = Warn
 	l.warnImpl(l, level, v...)
 }
 
 func (l *loggerImpl) Warnf(format string, v ...interface{}) {
-	var level level = Warn
+	var level Level = Warn
 	l.warnfImpl(l, level, format, v...)
 }
 
 // Error
 func (l *loggerImpl) Error(v ...interface{}) {
-	var level level = Error
+	var level Level = Error
 	l.errorImpl(l, level, v...)
 }
 
 func (l *loggerImpl) Errorf(format string, v ...interface{}) {
-	var level level = Error
+	var level Level = Error
 	l.errorfImpl(l, level, format, v...)
 }
 
 // Fatal
 func (l *loggerImpl) Fatal(v ...interface{}) {
-	var level level = Fatal
+	var level Level = Fatal
 	l.fatalImpl(l, level, v...)
 	os.Exit(1)
 }
 
 func (l *loggerImpl) Fatalf(format string, v ...interface{}) {
-	var level level = Fatal
+	var level Level = Fatal
 	l.fatalfImpl(l, level, format, v...)
 	os.Exit(1)
 }
@@ -208,7 +212,7 @@ func (l *loggerImpl) Fatalf(format string, v ...interface{}) {
 // 	file             The file name
 // 	line             The line number
 // 	msg              The user-supplied message
-func (l *loggerImpl) header(lv level) *buffer.Buffer {
+func (l *loggerImpl) header(lv Level) *buffer.Buffer {
 	_, file, line, ok := runtime.Caller(3)
 	if !ok {
 		file = "???"
@@ -223,7 +227,7 @@ func (l *loggerImpl) header(lv level) *buffer.Buffer {
 }
 
 // formatHeader formats a log header using the provided file name and line number.
-func (l *loggerImpl) formatHeader(lv level, file string, line int) *buffer.Buffer {
+func (l *loggerImpl) formatHeader(lv Level, file string, line int) *buffer.Buffer {
 	now := time.Now()
 	if line < 0 {
 		line = 0 // not a real line number, but acceptable to someDigits

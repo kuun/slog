@@ -16,7 +16,7 @@ import (
 )
 
 // Level is log level
-type level int
+type Level int
 
 // log level definition
 const (
@@ -38,7 +38,7 @@ const (
 	LvNameFatal  = "FATAL"
 )
 
-func (lv level) String() string {
+func (lv Level) String() string {
 	switch lv {
 	case Debug:
 		return "DEBUG"
@@ -57,7 +57,7 @@ func (lv level) String() string {
 	}
 }
 
-func parseLevel(strLevel string) (level, bool) {
+func parseLevel(strLevel string) (Level, bool) {
 	switch strLevel {
 	case LvNameDebug:
 		return Debug, true
@@ -79,6 +79,8 @@ func parseLevel(strLevel string) (level, bool) {
 type Logger interface {
 	GetLevel() string
 	SetLevel(lv string) error
+
+	Above(lv Level) bool
 
 	Debug(v ...interface{})
 	Debugf(fmt string, v ...interface{})
