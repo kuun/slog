@@ -24,7 +24,7 @@ func NewFileWriter(name, fileName string) (wr *fileWriter, err error) {
 	case "STDERR":
 		file = os.Stderr
 	default:
-		file, err = os.OpenFile(fileName, os.O_CREATE|os.O_APPEND, 0666)
+		file, err = os.OpenFile(fileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666|os.ModeAppend)
 		if err != nil {
 			return nil, err
 		}
@@ -61,7 +61,7 @@ func (writer *fileWriter) Run() {
 		for {
 			buff := <-writer.cacheChn
 			if _, err := writer.file.Write(buff.Bytes()); err != nil {
-				fmt.Printf("write log error: %s", err)
+				fmt.Fprintf(os.Stderr, "write log error: %s\n", err)
 			}
 			buffer.PutBuffer(buff)
 		}
