@@ -116,3 +116,10 @@ func TestLevel(t *testing.T) {
 		}
 	}
 }
+
+func TestMakeAbbrPath(t *testing.T) {
+	abbrPath := makeAbbrPath("github.com/kuun/src/test")
+	if abbrPath != "g/k/s/test" {
+		t.Errorf("make abbravitated path error, abbr path: %s", abbrPath)
+	}
+}

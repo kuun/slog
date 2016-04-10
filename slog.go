@@ -217,7 +217,8 @@ func verifyLogLevel(level string) error {
 }
 
 func GetLogger() Logger {
-	fullPath, abbrPath := getLogPath()
+	fullPath := getLogPath()
+	abbrPath := makeAbbrPath(fullPath)
 	if logger, ok := loggers[fullPath]; ok {
 		return logger
 	} else {
@@ -226,7 +227,7 @@ func GetLogger() Logger {
 }
 
 func GetLoggerWithPath(path string) Logger {
-	return doGetLogger(path, path)
+	return doGetLogger(path, makeAbbrPath(path))
 }
 
 func doGetLogger(fullPath, abbrPath string) Logger {
@@ -261,15 +262,16 @@ func getLogWriters(writerNames []string) []writer.LogWriter {
 	return wrs
 }
 
-func getLogPath() (fullPath, abbrPath string) {
+func getLogPath() (fullPath string) {
 	_, file, _, _ := runtime.Caller(2)
 	lastSlashPos := strings.LastIndexByte(file, '/')
 	srcPos := strings.Index(file, "/src/")
-	fullPath = file[srcPos+5 : lastSlashPos]
+	return file[srcPos+5 : lastSlashPos]
+}
 
+func makeAbbrPath(fullPath string) (abbrPath string) {
 	dirs := strings.Split(fullPath, "/")
 	count := len(dirs)
-	abbrPath = ""
 	for i, dir := range dirs {
 		if i != count-1 {
 			abbrPath += dir[0:1]
@@ -278,7 +280,7 @@ func getLogPath() (fullPath, abbrPath string) {
 			abbrPath += dir
 		}
 	}
-	return fullPath, abbrPath
+	return abbrPath
 }
 
 func isWildMatch(pattern, str string) bool {
