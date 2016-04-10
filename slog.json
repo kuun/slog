@@ -1,2 +1,15 @@
 {
+    "writers": [
+        {
+            "name": "file",
+            "file": "/tmp/slog.log"
+        }
+    ],
+    "loggers": [
+        {
+            "pattern": "*",
+            "level": "DEBUG",
+            "writers": ["file", "STDOUT"]
+        }
+    ]
 }
