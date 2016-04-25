@@ -6,7 +6,6 @@ package slog
 import (
 	"encoding/json"
 	"errors"
-	"flag"
 	"fmt"
 	"github.com/kuun/slog/writer"
 	"io/ioutil"
@@ -128,27 +127,22 @@ var loggers map[string]Logger = make(map[string]Logger)
 // all log writers, indexed by writer name
 var writers map[string]writer.LogWriter = make(map[string]writer.LogWriter)
 
-var confFile string
-
 var conf configration
 
 func init() {
 	var data []byte
 	var err error
 
-	flag.StringVar(&confFile, "slog", "", "config file for slog")
-	flag.Parse()
-	if confFile == "" {
-		flag.Usage()
-		goto FAIL
-	}
-	if data, err = ioutil.ReadFile(confFile); err != nil {
-		fmt.Printf("slog read file '%s' error: %s", confFile, err)
-		goto FAIL
-	}
-	if err = json.Unmarshal(data, &conf); err != nil {
-		fmt.Printf("slog parse config file '%s' error: %s", confFile, err)
-		goto FAIL
+	confFile := os.Getenv("SLOG_CONF_FILE")
+	if confFile != "" {
+		if data, err = ioutil.ReadFile(confFile); err != nil {
+			fmt.Printf("slog read file '%s' error: %s", confFile, err)
+			goto FAIL
+		}
+		if err = json.Unmarshal(data, &conf); err != nil {
+			fmt.Printf("slog parse config file '%s' error: %s", confFile, err)
+			goto FAIL
+		}
 	}
 	if err = initWriters(); err != nil {
 		fmt.Printf("slog init writers error: %s", err)
