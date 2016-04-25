@@ -15,31 +15,31 @@ import (
 var levelChars = [6]byte{'D', 'I', 'N', 'W', 'E', 'F'}
 
 type loggerImpl struct {
-	level       Level
-	writers     []writer.LogWriter
-	fullPath    string
-	abbrPath    string
+	level    Level
+	writers  []writer.LogWriter
+	fullPath string
+	abbrPath string
 
 	// log.Logger.Output callPath
-	callPath    int
+	callPath int
 
-	debugImpl   func(l *loggerImpl, level Level, v ...interface{})
-	debugfImpl  func(l *loggerImpl, level Level, format string, v ...interface{})
+	debugImpl  func(l *loggerImpl, level Level, v ...interface{})
+	debugfImpl func(l *loggerImpl, level Level, format string, v ...interface{})
 
-	infoImpl    func(l *loggerImpl, level Level, v ...interface{})
-	infofImpl   func(l *loggerImpl, level Level, format string, v ...interface{})
+	infoImpl  func(l *loggerImpl, level Level, v ...interface{})
+	infofImpl func(l *loggerImpl, level Level, format string, v ...interface{})
 
 	noticeImpl  func(l *loggerImpl, level Level, v ...interface{})
 	noticefImpl func(l *loggerImpl, level Level, format string, v ...interface{})
 
-	warnImpl    func(l *loggerImpl, level Level, v ...interface{})
-	warnfImpl   func(l *loggerImpl, level Level, format string, v ...interface{})
+	warnImpl  func(l *loggerImpl, level Level, v ...interface{})
+	warnfImpl func(l *loggerImpl, level Level, format string, v ...interface{})
 
-	errorImpl   func(l *loggerImpl, level Level, v ...interface{})
-	errorfImpl  func(l *loggerImpl, level Level, format string, v ...interface{})
+	errorImpl  func(l *loggerImpl, level Level, v ...interface{})
+	errorfImpl func(l *loggerImpl, level Level, format string, v ...interface{})
 
-	fatalImpl   func(l *loggerImpl, level Level, v ...interface{})
-	fatalfImpl  func(l *loggerImpl, level Level, format string, v ...interface{})
+	fatalImpl  func(l *loggerImpl, level Level, v ...interface{})
+	fatalfImpl func(l *loggerImpl, level Level, format string, v ...interface{})
 }
 
 // func suffix is "Y" is valid implements
@@ -123,7 +123,7 @@ func (l *loggerImpl) SetLevel(level string) error {
 	return nil
 }
 
-func (l *loggerImpl)Above(lv Level) bool {
+func (l *loggerImpl) Above(lv Level) bool {
 	return lv >= l.level
 }
 
