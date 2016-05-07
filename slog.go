@@ -7,11 +7,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/kuun/slog/writer"
 	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
+
+	"github.com/kuun/slog/writer"
 )
 
 // Level is log level
@@ -221,12 +222,12 @@ func GetLogger() Logger {
 	abbrPath := makeAbbrPath(fullPath)
 	if logger, ok := loggers[fullPath]; ok {
 		return logger
-	} 
+	}
 	return doGetLogger(fullPath, abbrPath)
 }
 
-// GetLoggerWithPath returns a logger with a specific path, recommands to use 
-// GetLogger instead of GetLoggerWithPath, unless the package path includes 
+// GetLoggerWithPath returns a logger with a specific path, recommands to use
+// GetLogger instead of GetLoggerWithPath, unless the package path includes
 // string 'src'.
 func GetLoggerWithPath(path string) Logger {
 	return doGetLogger(path, makeAbbrPath(path))
@@ -291,6 +292,6 @@ func isWildMatch(pattern, str string) bool {
 	patternLen := len(pattern)
 	if pattern[patternLen-1] == '*' {
 		return strings.HasPrefix(str, pattern[:patternLen-1])
-	} 
+	}
 	return pattern == str
 }

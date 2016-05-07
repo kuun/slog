@@ -78,7 +78,7 @@ func TestGetLogPath(t *testing.T) {
 	fullPath := getLogPath()
 	expectFullPath := "testing"
 
-	if fullPath !=  expectFullPath{
+	if fullPath != expectFullPath {
 		t.Errorf("log full path is: %s, expect: %s", fullPath, expectFullPath)
 	}
 }

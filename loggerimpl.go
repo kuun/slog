@@ -1,13 +1,13 @@
 package slog
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"runtime"
 	"strings"
 	"time"
 
-	"errors"
 	"github.com/kuun/slog/buffer"
 	"github.com/kuun/slog/writer"
 )

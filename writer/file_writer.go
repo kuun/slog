@@ -2,8 +2,9 @@ package writer
 
 import (
 	"fmt"
-	"github.com/kuun/slog/buffer"
 	"os"
+
+	"github.com/kuun/slog/buffer"
 )
 
 type fileWriter struct {
