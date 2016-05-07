@@ -40,17 +40,17 @@ const (
 func (lv Level) String() string {
 	switch lv {
 	case Debug:
-		return "DEBUG"
+		return LvNameDebug
 	case Info:
-		return "INFO"
+		return LvNameInfo
 	case Notice:
-		return "NOTICE"
+		return LvNameNotice
 	case Warn:
-		return "WARN"
+		return LvNameWarn
 	case Error:
-		return "ERROR"
+		return LvNameError
 	case Fatal:
-		return "FATAL"
+		return LvNameFatal
 	default:
 		return "UNKOWN"
 	}
@@ -75,10 +75,14 @@ func parseLevel(strLevel string) (Level, bool) {
 	}
 }
 
+// Logger is the interface of slog, the interface likes the std log package
 type Logger interface {
+	// GetLevel gets log level of the logger.
 	GetLevel() string
+	// SetLevel sets log level of the logger.
 	SetLevel(lv string) error
 
+	// Above tests the current log level is above lv or not
 	Above(lv Level) bool
 
 	Debug(v ...interface{})
@@ -210,16 +214,20 @@ func verifyLogLevel(level string) error {
 	}
 }
 
+// GetLogger returns a logger assosiates to caller's package,
+// the logger path is the caller's package path
 func GetLogger() Logger {
 	fullPath := getLogPath()
 	abbrPath := makeAbbrPath(fullPath)
 	if logger, ok := loggers[fullPath]; ok {
 		return logger
-	} else {
-		return doGetLogger(fullPath, abbrPath)
-	}
+	} 
+	return doGetLogger(fullPath, abbrPath)
 }
 
+// GetLoggerWithPath returns a logger with a specific path, recommands to use 
+// GetLogger instead of GetLoggerWithPath, unless the package path includes 
+// string 'src'.
 func GetLoggerWithPath(path string) Logger {
 	return doGetLogger(path, makeAbbrPath(path))
 }
@@ -242,7 +250,6 @@ func doGetLogger(fullPath, abbrPath string) Logger {
 		}
 	}
 	panic("should not arrive here!")
-	return nil
 }
 
 func getLogWriters(writerNames []string) []writer.LogWriter {
@@ -284,7 +291,6 @@ func isWildMatch(pattern, str string) bool {
 	patternLen := len(pattern)
 	if pattern[patternLen-1] == '*' {
 		return strings.HasPrefix(str, pattern[:patternLen-1])
-	} else {
-		return pattern == str
-	}
+	} 
+	return pattern == str
 }
