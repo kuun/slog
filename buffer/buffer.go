@@ -21,7 +21,7 @@ import (
 	"sync"
 )
 
-// buffer holds a byte Buffer for reuse. The zero value is ready for use.
+// Buffer holds a byte Buffer for reuse. The zero value is ready for use.
 type Buffer struct {
 	bytes.Buffer
 	Tmp  [24]byte // temporary byte array for creating headers.
@@ -49,14 +49,14 @@ var freeListMu sync.Mutex
 // Some custom tiny helper functions to print the log header efficiently.
 const digits = "0123456789"
 
-// twoDigits formats a zero-prefixed two-digit integer at buf.tmp[i].
+// TwoDigits formats a zero-prefixed two-digit integer at buf.tmp[i].
 func (buf *Buffer) TwoDigits(i, d int) {
 	buf.Tmp[i+1] = digits[d%10]
 	d /= 10
 	buf.Tmp[i] = digits[d%10]
 }
 
-// nDigits formats an n-digit integer at buf.tmp[i],
+// NDigits formats an n-digit integer at buf.tmp[i],
 // padding with pad on the left.
 // It assumes d >= 0.
 func (buf *Buffer) NDigits(n, i, d int, pad byte) {
@@ -70,7 +70,7 @@ func (buf *Buffer) NDigits(n, i, d int, pad byte) {
 	}
 }
 
-// someDigits formats a zero-prefixed variable-width integer at buf.tmp[i].
+// SomeDigits formats a zero-prefixed variable-width integer at buf.tmp[i].
 func (buf *Buffer) SomeDigits(i, d int) int {
 	// Print into the top, then copy down. We know there's space for at least
 	// a 10-digit number.
@@ -86,13 +86,13 @@ func (buf *Buffer) SomeDigits(i, d int) int {
 	return copy(buf.Tmp[i:], buf.Tmp[j:])
 }
 
-// getBuffer returns a new, ready-to-use buffer.
+// GetBuffer returns a new, ready-to-use buffer.
 func GetBuffer() *Buffer {
 	freeListMu.Lock()
 	b := freeList
 	if b != nil {
 		freeList = b.next
-		freeListLen -= 1
+		freeListLen--
 	}
 	freeListMu.Unlock()
 	if b == nil {
@@ -104,7 +104,7 @@ func GetBuffer() *Buffer {
 	return b
 }
 
-// putBuffer returns a buffer to the free list.
+// PutBuffer returns a buffer to the free list.
 func PutBuffer(b *Buffer) {
 	if b.Len() >= cachedBufferMaxSize {
 		// Let big buffers die a natural death.

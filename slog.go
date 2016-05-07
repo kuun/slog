@@ -127,10 +127,10 @@ type configration struct {
 }
 
 // all loggers, indexed by logger full path
-var loggers map[string]Logger = make(map[string]Logger)
+var loggers = make(map[string]Logger)
 
 // all log writers, indexed by writer name
-var writers map[string]writer.LogWriter = make(map[string]writer.LogWriter)
+var writers = make(map[string]writer.LogWriter)
 
 var conf configration
 

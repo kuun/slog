@@ -8,7 +8,7 @@ import (
 )
 
 type fileWriter struct {
-	wType     WriterType          // writer type
+	wType     Type                // writer type
 	name      string              // writer name
 	file      *os.File            // log file
 	cacheChn  chan *buffer.Buffer // cache buffers that will be writing.
@@ -17,7 +17,8 @@ type fileWriter struct {
 
 const fileWriterCache = 50
 
-func NewFileWriter(name, fileName string) (wr *fileWriter, err error) {
+// NewFileWriter creates a new file log writer
+func NewFileWriter(name, fileName string) (wr LogWriter, err error) {
 	var file *os.File
 	switch name {
 	case "STDOUT":
@@ -46,7 +47,7 @@ func (writer *fileWriter) GetName() string {
 	return writer.name
 }
 
-func (writer *fileWriter) GetType() WriterType {
+func (writer *fileWriter) GetType() Type {
 	return writer.wType
 }
 
@@ -54,6 +55,7 @@ func (writer *fileWriter) Write(buff *buffer.Buffer) {
 	writer.cacheChn <- buff
 }
 
+// Run starts a go routine to write buffers to file
 func (writer *fileWriter) Run() {
 	if writer.isRunning {
 		return
