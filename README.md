@@ -1,3 +1,3 @@
 # slog
 
-A simple log wrapper for std log, support log level.
+A simple log lib, support log level.
