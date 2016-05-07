@@ -74,18 +74,14 @@ func TestFatal(t *testing.T) {
 	testAll("FATAL", "")
 }
 
-//func TestGetLogPath(t *testing.T) {
-//	fullPath, shortPath := getLogPath()
-//
-//	expectFullPath := "github.com/kuun/slog"
-//	expectShortPath := "g/k/slog"
-//	if fullPath !=  expectFullPath{
-//		t.Errorf("log full path is: %s, expect: %s", fullPath, expectFullPath)
-//	}
-//	if shortPath != expectShortPath {
-//		t.Errorf("log short path is: %s, expect: %s", shortPath, expectShortPath)
-//	}
-//}
+func TestGetLogPath(t *testing.T) {
+	fullPath := getLogPath()
+	expectFullPath := "testing"
+
+	if fullPath !=  expectFullPath{
+		t.Errorf("log full path is: %s, expect: %s", fullPath, expectFullPath)
+	}
+}
 
 func TestLevel(t *testing.T) {
 	t.Log("test log level")
