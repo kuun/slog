@@ -253,6 +253,8 @@ func (l *loggerImpl) formatHeader(lv Level, file string, line int) *buffer.Buffe
 	buf.NDigits(6, 16, now.Nanosecond()/1000, '0')
 	buf.Tmp[22] = ' '
 	buf.Write(buf.Tmp[:23])
+	buf.WriteString(l.abbrPath)
+	buf.WriteByte('/')
 	buf.WriteString(file)
 	buf.Tmp[0] = ':'
 	n := buf.SomeDigits(1, line)
