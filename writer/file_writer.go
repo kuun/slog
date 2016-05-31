@@ -12,6 +12,7 @@ type fileWriter struct {
 	name      string              // writer name
 	file      *os.File            // log file
 	cacheChn  chan *buffer.Buffer // cache buffers that will be writing.
+	flushDone chan bool           // all cached buffers are flush to file
 	isRunning bool                // if writer's writing gorotine is running
 }
 
@@ -32,10 +33,11 @@ func NewFileWriter(name, fileName string) (wr LogWriter, err error) {
 		}
 	}
 	return &fileWriter{
-		wType:    FILE,
-		name:     name,
-		file:     file,
-		cacheChn: make(chan *buffer.Buffer, fileWriterCache),
+		wType:     FILE,
+		name:      name,
+		file:      file,
+		cacheChn:  make(chan *buffer.Buffer, fileWriterCache),
+		flushDone: make(chan bool),
 	}, nil
 }
 
@@ -63,6 +65,10 @@ func (writer *fileWriter) Run() {
 	go func() {
 		for {
 			buff := <-writer.cacheChn
+			if buff == nil {
+				writer.flushDone <- true
+				continue
+			}
 			if _, err := writer.file.Write(buff.Bytes()); err != nil {
 				fmt.Fprintf(os.Stderr, "write log error: %s\n", err)
 			}
@@ -73,6 +79,8 @@ func (writer *fileWriter) Run() {
 }
 
 func (writer *fileWriter) Close() {
+	writer.Write(nil)
+	_ = <-writer.flushDone
 	if writer.name == "STDOUT" || writer.name == "STDERR" {
 		return
 	}

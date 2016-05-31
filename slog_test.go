@@ -119,3 +119,7 @@ func TestMakeAbbrPath(t *testing.T) {
 		t.Errorf("make abbravitated path error, abbr path: %s", abbrPath)
 	}
 }
+
+func TestClose(t *testing.T) {
+	Close()
+}

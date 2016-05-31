@@ -233,6 +233,14 @@ func GetLoggerWithPath(path string) Logger {
 	return doGetLogger(path, makeAbbrPath(path))
 }
 
+// Close flushes all data to files closes, this func should be called
+// before application exits.
+func Close() {
+	for _, wr := range writers {
+		wr.Close()
+	}
+}
+
 func doGetLogger(fullPath, abbrPath string) Logger {
 	for _, logConf := range conf.Loggers {
 		if isWildMatch(logConf.Pattern, fullPath) {
