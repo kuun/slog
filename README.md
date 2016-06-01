@@ -16,10 +16,11 @@ Only go standard libs
 
 ### Get a logger for your package
 
-Assume there are there packages: test, test/pkga, test/pkgb, structured as bellow:
+Assume there are there packages: github.com/kuun/slog/demo,
+github.com/kuun/slog/demo/pkga, github.com/kuun/slog/demo/pkgb, structured as bellow:
 
 ```
-src/test
+src/github.com/kuun/slog/demo
 |-- main.go
 |-- pkga
 |   `-- a.go
@@ -27,7 +28,7 @@ src/test
     `-- b.go
 ```
 
-src/test/main.go
+src/github.com/kuun/slog/demo/main.go
 
 ```go
 package main
@@ -48,7 +49,8 @@ func main() {
 	slog.Close()
 }
 ```
-src/test/pkga/a.go
+
+src/github.com/kuun/slog/demo/pkga/a.go
 
 ```go
 package pkga
@@ -62,7 +64,7 @@ func Hello() {
 }
 ```
 
-src/test/pkgb/b.go
+src/github.com/kuun/slog/demo/pkgb/b.go
 
 ```go
 package pkgb
