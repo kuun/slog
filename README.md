@@ -16,8 +16,8 @@ Only go standard libs
 
 ### Get a logger for your package
 
-Assume there are there packages: github.com/kuun/slog/demo,
-github.com/kuun/slog/demo/pkga, github.com/kuun/slog/demo/pkgb, structured as bellow:
+Assume there are there packages: **github.com/kuun/slog/demo**,
+**github.com/kuun/slog/demo/pkga**, **github.com/kuun/slog/demo/pkgb**, structured as bellow:
 
 ```
 src/github.com/kuun/slog/demo
