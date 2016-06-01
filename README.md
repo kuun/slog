@@ -81,9 +81,9 @@ func Hello() {
 then build and run the app, outputs on the terminal:
 
 ```
-D 0531 11:13:15.956194 test/main.go:13] hello slog
-D 0531 11:13:15.956257 t/pkga/a.go:8] hello pkga
-D 0531 11:13:15.956259 t/pkgb/b.go:8] hello pkgb
+D 0601 09:26:19.881703 g/k/s/demo/main.go:12] hello slog
+D 0601 09:26:19.881768 g/k/s/d/pkga/a.go:8] hello pkga
+D 0601 09:26:19.881770 g/k/s/d/pkgb/b.go:8] hello pkgb
 ```
 
 Get a new logger by calling slog.GetLogger, slog will create a slog.Logger categorized
