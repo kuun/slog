@@ -16,7 +16,7 @@ type fileWriter struct {
 	isRunning bool                // if writer's writing gorotine is running
 }
 
-const fileWriterCache = 50
+const fileWriterCache = 5
 
 // NewFileWriter creates a new file log writer
 func NewFileWriter(name, fileName string) (wr LogWriter, err error) {
