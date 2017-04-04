@@ -34,8 +34,8 @@ src/github.com/kuun/slog/demo/main.go
 package main
 
 import (
-	"test/pkga"
-	"test/pkgb"
+	"github.com/kuun/slog/demo/pkga"
+	"github.com/kuun/slog/demo/pkgb"
 
 	"github.com/kuun/slog"
 )
@@ -95,7 +95,7 @@ the same slog.Logger.
 Slog configure file a json object. If there is not configure file or configure
 file is empty, slog uses the default configure:
 
-```javascript
+```json
 {
     "loggers": [
         {
@@ -109,7 +109,7 @@ file is empty, slog uses the default configure:
 
 Now we want to write log to a file, we can modify the configuration like bellow:
 
-```javascript
+```json
 {
     "writers": [
         {
