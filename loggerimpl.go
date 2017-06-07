@@ -127,6 +127,30 @@ func (l *loggerImpl) Above(lv Level) bool {
 	return lv >= l.level
 }
 
+func (l *loggerImpl) IsDebugEnabled() bool {
+	return Debug == l.level
+}
+
+func (l *loggerImpl) IsInfoEnabled() bool {
+	return Info >= l.level
+}
+
+func (l *loggerImpl) IsNoticeEnabled() bool {
+	return Notice >= l.level
+}
+
+func (l *loggerImpl) IsWarnEnabled() bool {
+	return Warn >= l.level
+}
+
+func (l *loggerImpl) IsErrorEnabled() bool {
+	return Error >= l.level
+}
+
+func (l *loggerImpl) IsFatalEnabled() bool {
+	return Fatal >= l.level
+}
+
 // Debug
 func (l *loggerImpl) Debug(v ...interface{}) {
 	var level Level = Debug

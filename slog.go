@@ -83,8 +83,13 @@ type Logger interface {
 	// SetLevel sets log level of the logger.
 	SetLevel(lv string) error
 
-	// Above tests the current log level is above lv or not
-	Above(lv Level) bool
+	// Is*Enabled tests the current log level is enabled or not
+	IsDebugEnabled() bool
+	IsInfoEnabled() bool
+	IsNoticeEnabled() bool
+	IsWarnEnabled() bool
+	IsErrorEnabled() bool
+	IsFatalEnabled() bool
 
 	Debug(v ...interface{})
 	Debugf(fmt string, v ...interface{})
