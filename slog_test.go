@@ -12,7 +12,8 @@ type computer struct {
 }
 
 func testAll(level string, prefix string) {
-	logger := GetLogger()
+	type slogPkgInfo struct{}
+	logger := GetLogger(slogPkgInfo{})
 	logger.SetLevel(level)
 	testComputer := computer{"mycomputer", 4}
 	//fmt.Printf("logger: %#v\n", logger)
@@ -85,7 +86,8 @@ func TestGetLogPath(t *testing.T) {
 
 func TestLevel(t *testing.T) {
 	t.Log("test log level")
-	logger := GetLogger()
+	type slogPkgInfo struct{}
+	logger := GetLogger(slogPkgInfo{})
 
 	if lv, _ := parseLevel(LvNameDebug); lv != Debug {
 		t.Errorf("parse log level name error, level: %s", LvNameDebug)

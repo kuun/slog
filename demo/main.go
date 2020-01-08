@@ -6,7 +6,9 @@ import (
 	"github.com/kuun/slog/demo/pkgb"
 )
 
-var log = slog.GetLogger()
+type slogPkgInfo struct{}
+
+var log = slog.GetLogger(slogPkgInfo{})
 
 func main() {
 	log.Debug("hello slog")

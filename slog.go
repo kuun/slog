@@ -9,11 +9,15 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"reflect"
 	"runtime"
 	"strings"
 
 	"github.com/kuun/slog/writer"
 )
+
+type Empty struct {
+}
 
 // Level is log level
 type Level int
@@ -222,8 +226,8 @@ func verifyLogLevel(level string) error {
 
 // GetLogger returns a logger assosiates to caller's package,
 // the logger path is the caller's package path
-func GetLogger() Logger {
-	fullPath := getLogPath()
+func GetLogger(pkgInfo interface{}) Logger {
+	fullPath := reflect.TypeOf(pkgInfo).PkgPath()
 	abbrPath := makeAbbrPath(fullPath)
 	if logger, ok := loggers[fullPath]; ok {
 		return logger
