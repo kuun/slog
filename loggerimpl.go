@@ -116,6 +116,7 @@ func (l *loggerImpl) SetLevel(level string) error {
 	case Error:
 		l.errorImpl = printImplY
 		l.errorfImpl = printfImplY
+		fallthrough
 	case Fatal:
 		l.fatalImpl = printImplY
 		l.fatalfImpl = printfImplY
@@ -210,7 +211,7 @@ func (l *loggerImpl) Errorf(format string, v ...interface{}) {
 func (l *loggerImpl) Fatal(v ...interface{}) {
 	var level Level = Fatal
 	l.fatalImpl(l, level, v...)
-	os.Exit(1)
+	panic(fmt.Sprint(v...))
 }
 
 func (l *loggerImpl) Fatalf(format string, v ...interface{}) {
@@ -219,23 +220,24 @@ func (l *loggerImpl) Fatalf(format string, v ...interface{}) {
 	os.Exit(1)
 }
 
-//
 // these codes are from github/golang/glog
 //
-
 // header formats a log header and returns a buffer containing the formatted
 // header and the user's file and line number.
 // Log lines have this form:
-// 	L mmdd hh:mm:ss.uuuuuu threadid file:line] msg...
+//
+//	L mmdd hh:mm:ss.uuuuuu threadid file:line] msg...
+//
 // where the fields are defined as follows:
-// 	L                A single character, representing the log level (eg 'I' for INFO)
-// 	mm               The month (zero padded; ie May is '05')
-// 	dd               The day (zero padded)
-// 	hh:mm:ss.uuuuuu  Time in hours, minutes and fractional seconds
-// 	threadid         The space-padded thread ID as returned by GetTID()
-// 	file             The file name
-// 	line             The line number
-// 	msg              The user-supplied message
+//
+//	L                A single character, representing the log level (eg 'I' for INFO)
+//	mm               The month (zero padded; ie May is '05')
+//	dd               The day (zero padded)
+//	hh:mm:ss.uuuuuu  Time in hours, minutes and fractional seconds
+//	threadid         The space-padded thread ID as returned by GetTID()
+//	file             The file name
+//	line             The line number
+//	msg              The user-supplied message
 func (l *loggerImpl) header(lv Level) *buffer.Buffer {
 	_, file, line, ok := runtime.Caller(3)
 	if !ok {
